@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  knowledge-assistant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_knowledge_assistant
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - ENV=production
+      # Optional: Add keys for Cloud LLM integration
+      # - GEMINI_API_KEY=${GEMINI_API_KEY}
+      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./backend/data:/app/backend/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
