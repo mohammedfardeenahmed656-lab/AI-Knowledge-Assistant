@@ -1,0 +1,1 @@
+# AI Knowledge Assistant: Production-Grade Educational RAG Platform
