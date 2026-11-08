@@ -1,0 +1,230 @@
+"""
+RAG Pipeline Component: LLM Answer Generator & Citation Resolver
+================================================================
+
+Educational Deep-Dive:
+----------------------
+What happens in the Generation step of RAG?
+At this stage:
+  1. We take the user's question, recent conversation turns, and the top retrieved chunks.
+  2. We assemble them into a strict grounded prompt.
+  3. We send the prompt to the LLM (e.g., Gemini, OpenAI, or a local model).
+  4. The LLM generates the answer, inserting citation tags like `[1]` or `[2]`.
+  5. The Generator parses those tags and maps them to concrete source documents and page numbers.
+
+Why is Citation Resolution essential?
+Trust and auditability! A user should never have to take an AI's word for it.
+Clickable citations allow a user to immediately click `[1]` and inspect the exact page
+and excerpt in the original document from which that assertion was derived.
+"""
+
+import time
+import re
+from typing import List, Dict, Any, Tuple, Optional
+from app.config import settings
+from app.rag.prompt import build_rag_prompt
+
+class AnswerGenerator:
+    """
+    Coordinates LLM answer generation across Gemini API, OpenAI API,
+    and an intelligent offline grounded synthesizer, complete with citation resolution.
+    """
+    
+    def __init__(self):
+        self._provider = self._detect_provider()
+
+    def _detect_provider(self) -> str:
+        if settings.GEMINI_API_KEY:
+            return "gemini"
+        elif settings.OPENAI_API_KEY:
+            return "openai"
+        else:
+            return "local_grounded_engine"
+
+    @property
+    def provider_name(self) -> str:
+        return self._provider
+
+    @property
+    def model_name(self) -> str:
+        if self._provider == "gemini":
+            return settings.GEMINI_MODEL
+        elif self._provider == "openai":
+            return settings.OPENAI_MODEL
+        return "Grounded Heuristic Synthesizer (Local/Offline)"
+
+    def generate_answer(
+        self,
+        question: str,
+        retrieved_chunks: List[Dict[str, Any]],
+        conversation_history: Optional[List[Dict[str, Any]]] = None
+    ) -> Tuple[str, List[Dict[str, Any]], float]:
+        """
+        Generates an answer grounded in the retrieved chunks.
+        Returns: (answer_text, citations_list, generation_latency_ms)
+        """
+        start_time = time.perf_counter()
+        
+        # If no chunks were retrieved or all are below threshold
+        if not retrieved_chunks:
+            latency_ms = (time.perf_counter() - start_time) * 1000.0
+            refusal = (
+                "Based on the uploaded documents, I could not find information regarding this question. "
+                "Please upload a relevant document or verify your query."
+            )
+            return refusal, [], round(latency_ms, 2)
+            
+        prompt = build_rag_prompt(question, retrieved_chunks, conversation_history)
+        
+        # Call active provider
+        answer_text = ""
+        if self._provider == "gemini":
+            try:
+                answer_text = self._call_gemini(prompt)
+            except Exception as err:
+                print(f"[Generator] Gemini API error ({err}), falling back to local engine.")
+                answer_text = self._generate_local_grounded(question, retrieved_chunks)
+        elif self._provider == "openai":
+            try:
+                answer_text = self._call_openai(prompt)
+            except Exception as err:
+                print(f"[Generator] OpenAI API error ({err}), falling back to local engine.")
+                answer_text = self._generate_local_grounded(question, retrieved_chunks)
+        else:
+            answer_text = self._generate_local_grounded(question, retrieved_chunks)
+            
+        latency_ms = (time.perf_counter() - start_time) * 1000.0
+        
+        # Parse inline citations from the answer
+        citations = self._resolve_citations(answer_text, retrieved_chunks)
+        
+        return answer_text.strip(), citations, round(latency_ms, 2)
+
+    def _call_gemini(self, prompt: str) -> str:
+        """Call Google Gemini generative model API."""
+        import requests
+        model = settings.GEMINI_MODEL
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={settings.GEMINI_API_KEY}"
+        payload = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
+                "temperature": 0.2,  # Low temperature for strict factual grounding
+                "maxOutputTokens": 1024
+            }
+        }
+        resp = requests.post(url, json=payload, timeout=25)
+        resp.raise_for_status()
+        data = resp.json()
+        candidates = data.get("candidates", [])
+        if candidates and "content" in candidates[0]:
+            parts = candidates[0]["content"].get("parts", [])
+            if parts and "text" in parts[0]:
+                return parts[0]["text"]
+        return "No response generated by Gemini."
+
+    def _call_openai(self, prompt: str) -> str:
+        """Call OpenAI chat completions API."""
+        import requests
+        url = "https://api.openai.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": settings.OPENAI_MODEL,
+            "messages": [
+                {"role": "user", "content": prompt}
+            ],
+            "temperature": 0.2
+        }
+        resp = requests.post(url, headers=headers, json=payload, timeout=25)
+        resp.raise_for_status()
+        data = resp.json()
+        return data["choices"][0]["message"]["content"]
+
+    def _generate_local_grounded(
+        self,
+        question: str,
+        retrieved_chunks: List[Dict[str, Any]]
+    ) -> str:
+        """
+        High-fidelity offline grounded answer generator.
+        Extracts the most salient factual sentences answering the question
+        from the top-ranked context chunks, formats bulleted findings,
+        and injects proper [1], [2] citations.
+        """
+        q_words = set(re.findall(r'\b[a-zA-Z0-9_]{3,}\b', question.lower()))
+        
+        findings = []
+        for idx, chunk in enumerate(retrieved_chunks, start=1):
+            text = chunk.get("text", "")
+            sentences = re.split(r'(?<=[.!?])\s+', text)
+            
+            # Score sentences based on query word overlap
+            scored_sentences = []
+            for sent in sentences:
+                sent_clean = sent.strip()
+                if len(sent_clean) < 15:
+                    continue
+                s_words = set(re.findall(r'\b[a-zA-Z0-9_]{3,}\b', sent_clean.lower()))
+                overlap = len(q_words.intersection(s_words))
+                if overlap > 0:
+                    scored_sentences.append((sent_clean, overlap))
+                    
+            scored_sentences.sort(key=lambda x: x[1], reverse=True)
+            if scored_sentences:
+                top_sentence = scored_sentences[0][0]
+                findings.append(f"{top_sentence} [{idx}]")
+                
+        if not findings:
+            top_chunk = retrieved_chunks[0]
+            first_sentence = top_chunk["text"].split(".")[0].strip()
+            if first_sentence:
+                findings.append(f"{first_sentence}. [1]")
+            else:
+                return "Based on the uploaded documents, I could not find information regarding this question."
+                
+        # Synthesize clear grounded explanation
+        response_lines = [
+            "Based on the uploaded documents, here is the relevant information:",
+            ""
+        ]
+        for f in findings[:3]:
+            response_lines.append(f"• {f}")
+            
+        return "\n".join(response_lines)
+
+    def _resolve_citations(
+        self,
+        answer_text: str,
+        retrieved_chunks: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Scan answer text for bracketed citations like [1], [2],
+        and map them to the corresponding chunk source metadata.
+        """
+        citation_indices = set(int(m) for m in re.findall(r'\[(\d+)\]', answer_text))
+        
+        # If no explicit brackets were found in answer but chunks were retrieved, cite chunk #1
+        if not citation_indices and retrieved_chunks:
+            citation_indices.add(1)
+            
+        resolved_citations = []
+        for idx in sorted(citation_indices):
+            chunk_idx = idx - 1
+            if 0 <= chunk_idx < len(retrieved_chunks):
+                chunk = retrieved_chunks[chunk_idx]
+                preview = chunk["text"][:120].strip() + ("..." if len(chunk["text"]) > 120 else "")
+                resolved_citations.append({
+                    "index": idx,
+                    "document_id": chunk["document_id"],
+                    "filename": chunk["filename"],
+                    "page": chunk.get("page", 1),
+                    "chunk_id": chunk["chunk_id"],
+                    "preview_text": preview
+                })
+                
+        return resolved_citations
+
+# Singleton generator instance
+answer_generator = AnswerGenerator()

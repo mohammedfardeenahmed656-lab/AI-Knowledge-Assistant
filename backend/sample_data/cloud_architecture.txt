@@ -1,0 +1,13 @@
+Cloud Native Microservices and High Availability Architecture
+
+1. System Overview
+Our cloud infrastructure is deployed across multiple availability zones using Kubernetes clusters. The architecture decouples client-facing API gateways from back-end microservices to guarantee 99.99% uptime.
+
+2. Caching Tier
+To reduce database load, Redis clusters are utilized as an in-memory caching layer with an average read latency under 2 milliseconds. Cache invalidation follows a write-through strategy with a default Time-To-Live (TTL) of 3600 seconds.
+
+3. Database Replication & Sharding
+The primary relational database runs PostgreSQL with asynchronous streaming replication to two read replicas. Tables exceeding 50 million rows are horizontally sharded based on customer tenant IDs to prevent index bloat.
+
+4. Fault Tolerance and Circuit Breakers
+To prevent cascading failures across microservices, all inter-service HTTP calls are wrapped with resilience circuit breakers. If a downstream service fails more than 5 consecutive health checks, the circuit opens for 30 seconds before testing recovery in half-open state.
