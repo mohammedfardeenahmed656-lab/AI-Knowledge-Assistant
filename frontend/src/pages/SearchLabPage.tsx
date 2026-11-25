@@ -20,7 +20,7 @@ export const SearchLabPage: React.FC = () => {
   const [hybridAlpha, setHybridAlpha] = useState(0.70);
   const [topK, setTopK] = useState(4);
   const [threshold, setThreshold] = useState(0.10);
-  
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SearchLabResponse | null>(null);
 
@@ -41,7 +41,7 @@ export const SearchLabPage: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
-      
+
       {/* Header */}
       <div>
         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Hybrid Search & Retrieval Lab</h2>
@@ -111,11 +111,10 @@ export const SearchLabPage: React.FC = () => {
                 key={tab.id}
                 type="button"
                 onClick={() => setMode(tab.id as any)}
-                className={`p-3 rounded-xl border text-left transition ${
-                  mode === tab.id
-                    ? 'border-sky-600 bg-sky-50 text-sky-900 shadow-xs'
-                    : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'
-                }`}
+                className={`p-3 rounded-xl border text-left transition ${mode === tab.id
+                  ? 'border-sky-600 bg-sky-50 text-sky-900 shadow-xs'
+                  : 'border-slate-200 hover:border-slate-300 text-slate-600 bg-white'
+                  }`}
               >
                 <p className="font-bold text-xs">{tab.label}</p>
                 <p className="text-[11px] text-slate-400 mt-0.5">{tab.desc}</p>

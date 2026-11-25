@@ -29,3 +29,4 @@ def test_semantic_similarity_relative_ordering():
     
     # Related topic should have strictly higher similarity than baking cookies
     assert sim_close > sim_far
+

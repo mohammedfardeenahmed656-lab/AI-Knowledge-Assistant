@@ -38,3 +38,4 @@ ENV PORT=8000
 # Start command
 WORKDIR /app/backend
 CMD ["python", "run.py"]
+

@@ -246,3 +246,4 @@ class EmbeddingEngine:
 
 # Singleton instance
 embedding_engine = EmbeddingEngine()
+

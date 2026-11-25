@@ -186,3 +186,4 @@ class RecursiveCharacterChunker:
             final_chunks.append(separator.join(accumulated_doc))
             
         return final_chunks
+

@@ -249,3 +249,4 @@ class VectorStoreManager:
 
 # Singleton vector store instance
 vector_store = VectorStoreManager()
+

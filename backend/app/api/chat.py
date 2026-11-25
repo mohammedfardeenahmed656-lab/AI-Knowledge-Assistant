@@ -198,3 +198,4 @@ async def delete_conversation(conversation_id: str):
         if cur.rowcount == 0:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
     return {"message": "Conversation deleted successfully."}
+

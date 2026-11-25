@@ -11,3 +11,4 @@ The primary relational database runs PostgreSQL with asynchronous streaming repl
 
 4. Fault Tolerance and Circuit Breakers
 To prevent cascading failures across microservices, all inter-service HTTP calls are wrapped with resilience circuit breakers. If a downstream service fails more than 5 consecutive health checks, the circuit opens for 30 seconds before testing recovery in half-open state.
+

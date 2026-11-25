@@ -13,7 +13,7 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
       <div className="bg-white rounded-2xl shadow-2xl border border-sky-100 max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
-        
+
         {/* Header */}
         <div className="px-6 py-4 border-b border-sky-100 flex items-center justify-between bg-sky-50/50">
           <div className="flex items-center space-x-3">
@@ -81,3 +81,4 @@ export const DocumentModal: React.FC<DocumentModalProps> = ({ document, onClose 
     </div>
   );
 };
+

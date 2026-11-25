@@ -41,7 +41,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ settings, onOpenSettings }) 
   const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
   const [selectedDocId, setSelectedDocId] = useState<string | undefined>(undefined);
-  
+
   // Modals state
   const [activeDebugData, setActiveDebugData] = useState<RAGProcessDebug | null>(null);
   const [activeCitation, setActiveCitation] = useState<Citation | null>(null);
@@ -133,7 +133,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ settings, onOpenSettings }) 
 
     try {
       const res = await api.sendChatMessage(trimmed, currentConversationId, settings, selectedDocId);
-      
+
       if (!currentConversationId) {
         setCurrentConversationId(res.conversation_id);
         loadConversations();
@@ -164,10 +164,10 @@ export const ChatPage: React.FC<ChatPageProps> = ({ settings, onOpenSettings }) 
 
   return (
     <div className="flex h-[calc(100vh-8.5rem)] rounded-2xl bg-white border border-sky-100 shadow-sm overflow-hidden animate-fade-in">
-      
+
       {/* Sidebar: Conversation History & Filters */}
       <aside className="w-80 border-r border-slate-100 bg-slate-50/60 flex flex-col shrink-0">
-        
+
         {/* New Chat Button */}
         <div className="p-4 border-b border-slate-100">
           <button
@@ -210,11 +210,10 @@ export const ChatPage: React.FC<ChatPageProps> = ({ settings, onOpenSettings }) 
                 <div
                   key={conv.id}
                   onClick={() => setCurrentConversationId(conv.id)}
-                  className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition text-xs ${
-                    isActive
-                      ? 'bg-sky-100 text-sky-900 font-bold border border-sky-200'
-                      : 'text-slate-700 hover:bg-slate-100 font-medium'
-                  }`}
+                  className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition text-xs ${isActive
+                    ? 'bg-sky-100 text-sky-900 font-bold border border-sky-200'
+                    : 'text-slate-700 hover:bg-slate-100 font-medium'
+                    }`}
                 >
                   <span className="truncate pr-2">{conv.title}</span>
                   <button
@@ -254,7 +253,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ settings, onOpenSettings }) 
 
       {/* Main Chat Stream Container */}
       <div className="flex-1 flex flex-col bg-white">
-        
+
         {/* Chat Area Header */}
         <div className="px-6 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center space-x-2">
@@ -311,11 +310,10 @@ export const ChatPage: React.FC<ChatPageProps> = ({ settings, onOpenSettings }) 
                   className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-2`}
                 >
                   <div
-                    className={`max-w-2xl rounded-2xl p-4 text-sm leading-relaxed ${
-                      isUser
-                        ? 'bg-sky-600 text-white shadow-sm font-medium'
-                        : 'bg-slate-50 border border-slate-200 text-slate-800 shadow-xs'
-                    }`}
+                    className={`max-w-2xl rounded-2xl p-4 text-sm leading-relaxed ${isUser
+                      ? 'bg-sky-600 text-white shadow-sm font-medium'
+                      : 'bg-slate-50 border border-slate-200 text-slate-800 shadow-xs'
+                      }`}
                   >
                     {/* Message Body */}
                     <div className="whitespace-pre-wrap">{msg.content}</div>
@@ -449,3 +447,4 @@ export const ChatPage: React.FC<ChatPageProps> = ({ settings, onOpenSettings }) 
     </div>
   );
 };
+

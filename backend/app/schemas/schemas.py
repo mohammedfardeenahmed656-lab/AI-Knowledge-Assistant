@@ -218,3 +218,4 @@ class HealthResponse(BaseModel):
     embedding_provider: str
     llm_provider: str
     timestamp: str
+

@@ -36,7 +36,7 @@ export const EvaluationPage: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-fade-in pb-12">
-      
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -102,7 +102,7 @@ export const EvaluationPage: React.FC = () => {
       {suiteResult && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            
+
             <div className="p-5 rounded-2xl bg-white border border-sky-100 shadow-sm">
               <span className="text-xs font-semibold text-slate-400 uppercase">Mean Precision@K</span>
               <p className="text-3xl font-extrabold text-sky-700 mt-2">
@@ -213,3 +213,4 @@ export const EvaluationPage: React.FC = () => {
     </div>
   );
 };
+

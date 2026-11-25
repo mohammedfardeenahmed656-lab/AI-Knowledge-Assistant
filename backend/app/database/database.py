@@ -123,3 +123,4 @@ def init_db() -> None:
 
 # Initialize tables on import
 init_db()
+

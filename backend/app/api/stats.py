@@ -34,3 +34,4 @@ async def get_dashboard_stats():
         recent_documents=[DocumentResponse(**d) for d in all_docs[:5]],
         recent_conversations=[ConversationSummary(**c) for c in all_convs[:5]]
     )
+

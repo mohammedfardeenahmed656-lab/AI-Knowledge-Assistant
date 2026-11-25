@@ -145,3 +145,4 @@ export interface RAGSettings {
   search_mode: 'vector' | 'keyword' | 'hybrid';
   hybrid_alpha: number;
 }
+

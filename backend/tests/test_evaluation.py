@@ -18,3 +18,4 @@ def test_evaluation_test_case_runner():
     assert "faithfulness_score" in result
     assert "retrieval_latency_ms" in result
     assert result["total_latency_ms"] > 0.0
+

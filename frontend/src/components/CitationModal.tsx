@@ -61,3 +61,4 @@ export const CitationModal: React.FC<CitationModalProps> = ({ citation, onClose 
     </div>
   );
 };
+

@@ -304,7 +304,7 @@ Stage 3: LLM Answer Synthesis`,
 
   return (
     <div className="space-y-8 animate-fade-in pb-16">
-      
+
       {/* Header */}
       <div>
         <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Interactive RAG Learning Academy</h2>
@@ -315,7 +315,7 @@ Stage 3: LLM Answer Synthesis`,
 
       {/* Main Learning Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* Module Selector Sidebar */}
         <div className="lg:col-span-4 space-y-2">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block px-2 mb-2">
@@ -329,16 +329,14 @@ Stage 3: LLM Answer Synthesis`,
                 <button
                   key={mod.id}
                   onClick={() => setActiveModuleId(mod.id)}
-                  className={`w-full p-3.5 rounded-2xl text-left transition flex items-center space-x-3 ${
-                    isActive
-                      ? 'bg-sky-600 text-white shadow-md shadow-sky-500/20'
-                      : 'bg-white hover:bg-sky-50/60 text-slate-700 border border-slate-200/60'
-                  }`}
+                  className={`w-full p-3.5 rounded-2xl text-left transition flex items-center space-x-3 ${isActive
+                    ? 'bg-sky-600 text-white shadow-md shadow-sky-500/20'
+                    : 'bg-white hover:bg-sky-50/60 text-slate-700 border border-slate-200/60'
+                    }`}
                 >
                   <div
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                      isActive ? 'bg-white/20 text-white' : 'bg-sky-100 text-sky-700'
-                    }`}
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-sky-100 text-sky-700'
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
@@ -358,7 +356,7 @@ Stage 3: LLM Answer Synthesis`,
 
         {/* Active Module Lesson View */}
         <div className="lg:col-span-8 space-y-6">
-          
+
           {/* Header Card */}
           <div className="p-6 rounded-3xl bg-white border border-sky-100 shadow-sm space-y-3">
             <div className="flex items-center space-x-2 text-xs font-bold text-sky-700 uppercase tracking-wide">
@@ -613,3 +611,4 @@ Stage 3: LLM Answer Synthesis`,
     </div>
   );
 };
+

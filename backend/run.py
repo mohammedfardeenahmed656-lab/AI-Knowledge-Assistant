@@ -16,3 +16,4 @@ if __name__ == "__main__":
     
     print(f"Starting AI Knowledge Assistant backend on http://{host}:{port} ...")
     uvicorn.run("app.main:app", host=host, port=port, reload=False)
+

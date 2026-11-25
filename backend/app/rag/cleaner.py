@@ -101,3 +101,4 @@ class TextCleaner:
         reconstructed = re.sub(r'\n{3,}', '\n\n', reconstructed)
         
         return reconstructed.strip()
+

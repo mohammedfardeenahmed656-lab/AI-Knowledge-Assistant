@@ -105,3 +105,4 @@ USER QUESTION:
 
 ASSISTANT GROUNDED ANSWER (with inline citations [1], [2]):"""
     return prompt
+

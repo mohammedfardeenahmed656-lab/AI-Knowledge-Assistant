@@ -228,3 +228,4 @@ class AnswerGenerator:
 
 # Singleton generator instance
 answer_generator = AnswerGenerator()
+

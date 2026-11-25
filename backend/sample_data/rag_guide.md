@@ -36,3 +36,4 @@ To measure the reliability of a RAG pipeline, 4 primary metrics are monitored:
 - Recall@K: The fraction of all relevant facts in the repository successfully captured in the top-K.
 - Faithfulness (Groundedness): The percentage of claims in the generated answer directly supported by the context.
 - Answer Relevance: How directly the answer addresses the original query.
+

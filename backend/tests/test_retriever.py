@@ -26,3 +26,4 @@ def test_pure_keyword_vs_pure_vector():
     
     assert len(vec_results) > 0
     assert len(key_results) > 0
+

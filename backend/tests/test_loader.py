@@ -30,3 +30,4 @@ def test_unsupported_file_extension(tmp_path):
     
     with pytest.raises(DocumentValidationError):
         DocumentLoader.load_document(bad_file, "bad.exe")
+

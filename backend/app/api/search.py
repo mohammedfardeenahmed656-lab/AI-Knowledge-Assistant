@@ -47,3 +47,4 @@ async def search_endpoint(request: SearchRequest):
         retrieval_latency_ms=round(latency, 2),
         debug_explanation=explanation
     )
+

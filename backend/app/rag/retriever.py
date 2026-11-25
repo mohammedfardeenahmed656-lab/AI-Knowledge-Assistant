@@ -259,3 +259,4 @@ class HybridRetriever:
 
 # Singleton retriever instance
 retriever = HybridRetriever()
+

@@ -27,3 +27,4 @@ async def health_check():
         llm_provider=answer_generator.provider_name,
         timestamp=datetime.utcnow().isoformat()
     )
+

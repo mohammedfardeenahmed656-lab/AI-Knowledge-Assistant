@@ -363,3 +363,4 @@ def get_dashboard_metrics() -> Dict[str, Any]:
         "avg_retrieval_time_ms": avg_retrieval,
         "avg_response_time_ms": avg_total
     }
+

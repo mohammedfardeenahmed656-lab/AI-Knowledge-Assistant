@@ -29,3 +29,4 @@ def test_chunker_overlap_validation():
     with pytest.raises(ValueError):
         # chunk_overlap cannot be >= chunk_size
         RecursiveCharacterChunker(chunk_size=100, chunk_overlap=120)
+
